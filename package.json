@@ -1,0 +1,27 @@
+{
+  "name": "nodejs-hw-mongodb",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vikcy0yef/nodejs-hw-mongodb.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vikcy0yef/nodejs-hw-mongodb/issues"
+  },
+  "homepage": "https://github.com/Vikcy0yef/nodejs-hw-mongodb#readme",
+  "description": "",
+  "devDependencies": {
+    "@eslint/js": "^9.28.0",
+    "eslint": "^9.28.0",
+    "globals": "^16.2.0",
+    "nodemon": "^3.1.10"
+  }
+}
