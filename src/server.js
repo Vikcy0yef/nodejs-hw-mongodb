@@ -11,9 +11,7 @@ function setupServer() {
     app.use(express.json())
     app.get('/contacts', contactsController.getContacts);
     app.get('/contacts/:contactId', contactsController.getContactById);
-    app.get("/", (req, res) => {
-        res.send("API is running")
-    })
+  
     app.use((req, res) => {
         res.status(404).json({ message: "Not found" });
     });
