@@ -1,4 +1,4 @@
-const contactService = require('../services/contacts');
+import contactService from'../services/contacts.js';
 
 async function getContacts(req, res) {
     try {
@@ -34,7 +34,7 @@ async function getContactById(req, res) {
     }
 }
 
-module.exports = {
+export default  {
     getContacts,
     getContactById,
 };
