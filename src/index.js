@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
-import setupServer from"./server.js";
+
+import setupServer from "./server.js";
 import initMongoConnection from'./db/initMongoConnection.js';
 import Contact from'./models/contact.js'
 import fs from 'fs/promises';
@@ -12,7 +13,11 @@ async function loadContacts() {
 
 async function start() {
     await initMongoConnection();
-    setupServer(); 
+    const app = setupServer(); 
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
     try {
         const existingCount = await Contact.countDocuments();
         if (existingCount === 0) {
@@ -29,3 +34,4 @@ async function start() {
 }
 
 start();
+
