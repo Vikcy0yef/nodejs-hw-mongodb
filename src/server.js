@@ -1,7 +1,7 @@
-const express = require("express");
-const cors = require("cors");
-const pino = require("pino-http");
-const contactsController = require('./controllers/contactsController')
+import express from "express";
+import cors from "cors";
+import pino from "pino-http";
+import contactsController from './controllers/contactsController.js'
 
 function setupServer() { 
     const app = express();
@@ -21,4 +21,4 @@ function setupServer() {
     });
 }
 
-module.exports = setupServer;
+export default setupServer;
