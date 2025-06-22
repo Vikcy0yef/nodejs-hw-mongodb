@@ -10,17 +10,28 @@ import {
 } from "../services/contacts.js"
 
 export const getContactsController = async (req, res) => {
-   
-        const contacts = await getAllContacts();
+    const {
+        page = 1,
+        perPage = 10,
+        sortBy = "name",
+        sortOther = "asc",
+    } = req.query;
+
+    const paginationData = await getAllContacts(
+        Number(page),
+        Number(perPage),
+        sortBy,
+        sortOther
+    );
   
-        if (!contacts||contacts.length===0) {
+        if (!paginationData.data.length) {
           throw createHttpError(404, 'Contact not found');
         }
       
         res.json({
           status: 200,
           message: 'Successfully found contacts!',
-          data: contacts,
+          data: paginationData,
         });   
    
     
