@@ -14,14 +14,18 @@ export const getContactsController = async (req, res) => {
         page = 1,
         perPage = 10,
         sortBy = "name",
-        sortOther = "asc",
+        sortOrder = "asc",
+        type,
+        isFavourite,
     } = req.query;
 
     const paginationData = await getAllContacts(
         Number(page),
         Number(perPage),
         sortBy,
-        sortOther
+        sortOrder,
+        type,
+        isFavourite
     );
   
         if (!paginationData.data.length) {
