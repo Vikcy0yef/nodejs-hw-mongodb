@@ -1,6 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+console.log("Loaded ACCESS_TOKEN_SECRET:", process.env.ACCESS_TOKEN_SECRET);
+console.log("Loaded REFRESH_TOKEN_SECRET:", process.env.REFRESH_TOKEN_SECRET);
+
+
 import setupServer from "./server.js";
 import initMongoConnection from'./db/initMongoConnection.js';
 import Contact from'./models/contact.js'
