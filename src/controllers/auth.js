@@ -10,7 +10,7 @@ export const register = ctrlWrapper(async (req, res) => {
     const userData = await registerUser(req.body);
 
     res.status(201).json({
-        status: "success",
+        status: 201,
         message: "Successfully registered a user!",
         data: userData,
     });
@@ -27,8 +27,15 @@ export const login = ctrlWrapper(async (req, res) => {
       maxAge: 30 * 24 * 60 * 60 * 1000, 
     });
   
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000,
+    });
+  
     res.status(200).json({
-      status: "success",
+      status: 200,
       message: "Successfully logged in an user!",
       data: {
         accessToken,
@@ -36,29 +43,7 @@ export const login = ctrlWrapper(async (req, res) => {
       },
     });
 });
-  
 
-
-export const loginController = async (req, res) => {
-  
-    const { email, password } = req.body;
-
-    const { accessToken, refreshToken } = await loginUser({ email, password });
-
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
-
-    res.status(200).json({
-      status: "success",
-      message: "Successfully logged in an user!",
-      data: { accessToken },
-    });
-  
-};
 
 export const refresh = ctrlWrapper(async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
@@ -70,7 +55,7 @@ export const refresh = ctrlWrapper(async (req, res) => {
     const newAccessToken = await refreshSession(refreshToken);
   
     res.status(200).json({
-      status: "success",
+      status: 200,
       message: "Successfully refreshed a session!",
       data: { accessToken: newAccessToken },
     });
@@ -87,6 +72,12 @@ export const logout = ctrlWrapper(async (req, res) => {
     await logoutUser(sessionId, refreshToken);
   
     res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+  
+    res.clearCookie("accessToken", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
