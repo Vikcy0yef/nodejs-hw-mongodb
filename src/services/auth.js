@@ -115,9 +115,5 @@ export const refreshSession = async (oldRefreshToken) => {
 };
   
 export const logoutUser = async (sessionId, refreshToken) => {
-  const session = await Session.findOne({ _id: sessionId, refreshToken });
-  if (!session) {
-    throw createHttpError(403, "Invalid session or token");
-  }
-  await Session.findByIdAndDelete(sessionId);
+  await Session.findOneAndDelete({ _id: sessionId, refreshToken });
 }
