@@ -62,35 +62,15 @@ export const refresh = ctrlWrapper(async (req, res) => {
 });
   
 export const logout = ctrlWrapper(async (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
+  const { refreshToken } = req.cookies; 
 
- 
-  const authHeader = req.headers.authorization || "";
-  let sessionId = null;
-
-  if (authHeader.startsWith("Bearer ")) {
-    sessionId = authHeader.split(" ")[1]; 
+  if (!refreshToken) {
+    throw createHttpError(400, "Missing refresh token");
   }
 
-  if (!refreshToken || !sessionId) {
-    throw createHttpError(400, "Missing refresh token or session ID");
-  }
+  await logoutUser(refreshToken); 
+  res.clearCookie("refreshToken");
+  res.clearCookie("accessToken");
 
-
-  await logoutUser(sessionId, refreshToken);
-
- 
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-  });
-
-  res.clearCookie("accessToken", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-  });
-
-  res.status(204).end(); 
+  res.status(204).send();
 });
