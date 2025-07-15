@@ -56,86 +56,26 @@ export const refresh = ctrlWrapper(async (req, res) => {
 });
 
 export const logout = ctrlWrapper(async (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
-  const sessionId = req.body.sessionId;
-  if (!refreshToken || !sessionId) {
-    throw createHttpError(400, "Missing refresh token or session ID");
-  }
-  await logoutUser(sessionId, refreshToken);
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    const refreshToken = req.cookies.refreshToken;
+    const sessionId = req.body.sessionId;
+  
+    if (!refreshToken || !sessionId) {
+      throw createHttpError(400, "Missing refresh token or session ID");
+    }
+  
+    await logoutUser(sessionId, refreshToken);
+  
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+  
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+  
+    res.status(204).end(); 
   });
-  res.clearCookie("accessToken", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-  });
-  res.status(204).end();
-});
-
-export const sendResetEmail = ctrlWrapper(async (req, res) => {
-  const { email } = req.body;
-  const user = await User.findOne({ email });
-  if (!user) {
-    throw createHttpError(404, "User not found!");
-  }
-  const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "5m" });
-  await sendResetPasswordEmail(email, token);
-  res.status(200).json({
-    status: 200,
-    message: "Reset password email has been successfully sent.",
-    data: {},
-  });
-});
-
-export const resetPassword = ctrlWrapper(async (req, res) => {
-  const { token, password } = req.body;
-  let payload;
-  try {
-    payload = jwt.verify(token, process.env.JWT_SECRET);
-  } catch {
-    throw createHttpError(401, "Token is expired or invalid.");
-  }
-  const user = await User.findOne({ email: payload.email });
-  if (!user) {
-    throw createHttpError(404, "User not found!");
-  }
-  const hashedPassword = await bcrypt.hash(password, 10);
-  user.password = hashedPassword;
-  await user.save();
-  await Session.deleteMany({ userId: user._id });
-  res.status(200).json({
-    status: 200,
-    message: "Password has been successfully reset.",
-    data: {},
-  });
-});
-
-
-
-export const updateContact = ctrlWrapper(async (req, res) => {
-  const { contactId } = req.params;
-  const photo = req.file?.path;
-
-  const updateData = {
-    ...(req.body.name && { name: req.body.name }),
-    ...(req.body.email && { email: req.body.email }),
-    ...(req.body.phoneNumber && { phoneNumber: req.body.phoneNumber }),
-    ...(req.body.contactType && { contactType: req.body.contactType }),
-    ...(typeof req.body.isFavourite !== "undefined" && { isFavourite: req.body.isFavourite }),
-    ...(photo && { photo }),
-  };
-
-  const updatedContact = await Contact.findByIdAndUpdate(contactId, updateData, { new: true });
-
-  if (!updatedContact) {
-    throw createHttpError(404, "Contact not found");
-  }
-
-  res.json({
-    status: 200,
-    data: updatedContact,
-  });
-});
