@@ -7,6 +7,8 @@ import notFoundHandler from "./middlewares/notFoundHandler.js";
 import authRouter from "./routers/auth.js";
 import cookieParser from "cookie-parser";
 
+
+
 function setupServer() { 
     const app = express();
 
@@ -14,11 +16,13 @@ function setupServer() {
     app.use(pino());
     app.use(express.json());
     app.use(cookieParser())
+    
 
     app.use('/contacts', controllersContacts);
-    console.log("Auth router connected")
     app.use("/auth", authRouter);
   
+    console.log("Auth router connected")
+
     app.use(notFoundHandler); 
    
     app.use(errorHandler);

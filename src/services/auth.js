@@ -3,7 +3,7 @@ import createHttpError from "http-errors";
 import bcrypt from "bcrypt";
 import Session from "../models/Session.js";
 import jwt from "jsonwebtoken";
-
+import { sendResetPasswordEmail } from "./emailService.js";
 
 export const registerUser = async ({ name, email, password }) => {
     const existingUser = await User.findOne({ email });
@@ -117,3 +117,25 @@ export const refreshSession = async (oldRefreshToken) => {
 export const logoutUser = async (sessionId, refreshToken) => {
   await Session.findOneAndDelete({ _id: sessionId, refreshToken });
 }
+
+export const sendResetEmail = async (email) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw createHttpError(404, "User not found!");
+  }
+
+  const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "5m" });
+
+  const resetLink = `${process.env.APP_DOMAIN}/reset-password?token=${token}`;
+
+  try {
+    await sendResetPasswordEmail(email, resetLink);
+  } catch (error) {
+    throw createHttpError(500, error.message);
+  }
+
+  return;
+};
+
+
+  
