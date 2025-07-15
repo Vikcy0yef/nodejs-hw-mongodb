@@ -118,6 +118,12 @@ export const refreshSession = async (oldRefreshToken) => {
     return accessToken;
 };
   
-export const logoutUser = async (sessionId, refreshToken) => {
-  await Session.findOneAndDelete({ _id: sessionId, refreshToken });
-}
+export const logoutUser = async (refreshToken) => {
+  const session = await Session.findOne({ refreshToken });
+
+  if (!session) {
+    throw createHttpError(400, "Session not found");
+  }
+
+  await Session.deleteOne({ _id: session._id });
+};
