@@ -11,6 +11,7 @@ import Session from '../models/Session.js';
 import bcrypt from 'bcrypt';
 import Contact from "../models/contact.js";
 
+
 export const register = ctrlWrapper(async (req, res) => {
   const userData = await registerUser(req.body);
   res.status(201).json({
@@ -112,22 +113,29 @@ export const resetPassword = ctrlWrapper(async (req, res) => {
   });
 });
 
-export const createContact = ctrlWrapper(async (req, res) => {
-  const { name, email, phone } = req.body;
-  const photo = req.file?.path || null;
-  const newContact = await Contact.create({ name, email, phone, photo });
-  res.status(201).json({ status: 201, data: newContact });
-});
+
 
 export const updateContact = ctrlWrapper(async (req, res) => {
   const { contactId } = req.params;
-  const { name, email, phone } = req.body;
   const photo = req.file?.path;
-  const updateData = { name, email, phone };
-  if (photo) updateData.photo = photo;
+
+  const updateData = {
+    ...(req.body.name && { name: req.body.name }),
+    ...(req.body.email && { email: req.body.email }),
+    ...(req.body.phoneNumber && { phoneNumber: req.body.phoneNumber }),
+    ...(req.body.contactType && { contactType: req.body.contactType }),
+    ...(typeof req.body.isFavourite !== "undefined" && { isFavourite: req.body.isFavourite }),
+    ...(photo && { photo }),
+  };
+
   const updatedContact = await Contact.findByIdAndUpdate(contactId, updateData, { new: true });
+
   if (!updatedContact) {
     throw createHttpError(404, "Contact not found");
   }
-  res.json({ status: 200, data: updatedContact });
+
+  res.json({
+    status: 200,
+    data: updatedContact,
+  });
 });

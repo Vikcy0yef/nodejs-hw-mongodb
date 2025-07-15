@@ -1,18 +1,18 @@
 import multer from "multer";
-import { v2 as cloudinary } from "cloudinary";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
+import path from "path";
+import fs from "fs/promises";
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+const tempDir = path.resolve("temp");
 
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "contacts_photos", // папка в Cloudinary
-    allowed_formats: ["jpg", "jpeg", "png"],
+
+await fs.mkdir(tempDir, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, tempDir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
   },
 });
 

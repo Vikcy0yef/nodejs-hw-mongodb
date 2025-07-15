@@ -17,5 +17,5 @@ export const sendResetEmailSchema = Joi.object({
   
 export const resetPasswordSchema = Joi.object({
     token: Joi.string().required(),
-    password: Joi.string().min(6).required(), // мінімальна довжина пароля, можна змінити
+    password: Joi.string().min(6).required(), 
   });
