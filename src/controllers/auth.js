@@ -62,26 +62,35 @@ export const refresh = ctrlWrapper(async (req, res) => {
 });
   
 export const logout = ctrlWrapper(async (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
-    const sessionId = req.body.sessionId;
-  
-    if (!refreshToken || !sessionId) {
-      throw createHttpError(400, "Missing refresh token or session ID");
-    }
-  
-    await logoutUser(sessionId, refreshToken);
-  
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
-  
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
-  
-    res.status(204).end(); 
+  const refreshToken = req.cookies.refreshToken;
+
+ 
+  const authHeader = req.headers.authorization || "";
+  let sessionId = null;
+
+  if (authHeader.startsWith("Bearer ")) {
+    sessionId = authHeader.split(" ")[1]; 
+  }
+
+  if (!refreshToken || !sessionId) {
+    throw createHttpError(400, "Missing refresh token or session ID");
+  }
+
+
+  await logoutUser(sessionId, refreshToken);
+
+ 
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
   });
+
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+  res.status(204).end(); 
+});

@@ -56,15 +56,19 @@ export const loginUser = async ({ email, password }) => {
     const accessTokenValidUntil = new Date(Date.now() + 15 * 60 * 1000);
     const refreshTokenValidUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
   
-    await Session.create({
-      userId: user._id,
-      accessToken,
-      refreshToken,
-      accessTokenValidUntil,
-      refreshTokenValidUntil,
-    });
-  
-    return { accessToken, refreshToken };
+    const newSession = await Session.create({
+  userId: user._id,
+  accessToken,
+  refreshToken,
+  accessTokenValidUntil,
+  refreshTokenValidUntil,
+});
+
+return {
+  accessToken,
+  refreshToken,
+  sessionId: newSession._id.toString(),
+};
 };
   
 export const refreshSession = async (oldRefreshToken) => {
