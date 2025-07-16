@@ -1,14 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-console.log("Loaded ACCESS_TOKEN_SECRET:", process.env.ACCESS_TOKEN_SECRET);
-console.log("Loaded REFRESH_TOKEN_SECRET:", process.env.REFRESH_TOKEN_SECRET);
-
-
-import setupServer from "./server.js";
-import initMongoConnection from'./db/initMongoConnection.js';
-import Contact from'./models/contact.js'
+import Contact from './models/contact.js';
 import fs from 'fs/promises';
+import setupServer from './server.js';
+import initMongoConnection from './db/initMongoConnection.js';
 
 async function loadContacts() {
   const data = await fs.readFile(new URL('./contacts.json', import.meta.url));
@@ -32,9 +28,8 @@ async function start() {
             console.log('Contacts already exist in database');
         }
     } catch (error) {
-        
         console.error('Error importing contacts:', error.message);
-}
+    }
 }
 
 start();
