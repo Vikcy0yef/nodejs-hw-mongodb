@@ -1,21 +1,24 @@
 import multer from "multer";
-import path from "path";
-import fs from "fs/promises";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import dotenv from "dotenv";
 
-const tempDir = path.resolve("temp");
+dotenv.config();
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-await fs.mkdir(tempDir, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, tempDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "contacts_photos",
+    allowed_formats: ["jpg", "jpeg", "png"],
+    transformation: [{ width: 500, height: 500, crop: "limit" }],
   },
 });
 
 const upload = multer({ storage });
-
 export default upload;

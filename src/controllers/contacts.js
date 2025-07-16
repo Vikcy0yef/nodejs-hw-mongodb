@@ -3,14 +3,12 @@ import createHttpError from "http-errors";
 import {
     getAllContacts,
     getContactById,
-  
-    updateContact,
     deleteContact
     
 } from "../services/contacts.js";
 import Contact from "../models/contact.js";
-import { uploadToCloudinary } from "../services/uploadService.js";
-import ctrlWrapper from "../utils/ctrlWrapper.js";
+
+
 
 export const getContactsController = async (req, res) => {
     const {
@@ -65,63 +63,43 @@ export const getContactByIdController = async (req, res) => {
 };
 
 
+export const createContactController = async (req, res) => {
+  const { _id: userId } = req.user;
+  const photoUrl = req.file ? req.file.path : null;
+
+  const contact = await Contact.create({
+    ...req.body,
+    userId,
+    photo: photoUrl,
+  });
+
+  return res.status(201).json({ status: 201, message: "Created", data: contact });
+};
+
 export const updateContactController = async (req, res) => {
-   
-    const { contactId } = req.params;
-    const { _id: userId } = req.user;
-        const updatedContact = await updateContact(contactId, req.body,userId);
-        if (!updatedContact) {
-            throw createHttpError(404, 'Contact not found');
-        }
-        res.status(200).json({
-            status: 200,
-            message: "Successfully patched a contact!",
-            data: updatedContact,
-        });
-   
-}
-
-
-export const deleteContactController = async (req, res) => {
-   
-    const { contactId } = req.params;
-    const { _id: userId } = req.user;
-        const deleted =await deleteContact(contactId,userId);
-
-        if (!deleted) {
-            throw createHttpError(404, 'Contact not found');
-        }
-        res.status(204).send();
-   
-}
-
-export const createContactController = ctrlWrapper(async (req, res) => {
-  console.log("BODY:", req.body);
-  console.log("FILE:", req.file);
-  const { name, email, phoneNumber, contactType } = req.body;
-  let isFavourite = req.body.isFavourite === 'true'; 
-
-  let photoUrl = null;
-  if (req.file) {
-   
-    const result = await uploadToCloudinary(req.file.path);
-    photoUrl = result.secure_url; 
-  }
-
+  const { contactId } = req.params;
   const { _id: userId } = req.user;
 
-  const newContact = await Contact.create({
-    name,
-    email,
-    phoneNumber,
-    contactType,
-    isFavourite,
-    photo: photoUrl,
-    userId,
-  });
+  const data = { ...req.body };
+  if (req.file) data.photo = req.file.path;
 
-  res.status(201).json({
-    status: 201,
-    data: newContact,
-  });
-});
+  const updated = await Contact.findOneAndUpdate(
+    { _id: contactId, userId },
+    data,
+    { new: true }
+  );
+
+  if (!updated) throw createHttpError(404, "Contact not found");
+
+  return res.json({ status: 200, message: "Updated", data: updated });
+};
+
+export const deleteContactController = async (req, res) => {
+  const { contactId } = req.params;
+  const { _id: userId } = req.user;
+
+  const deleted = await deleteContact(contactId, userId);
+  if (!deleted) throw createHttpError(404, "Contact not found");
+
+  return res.status(204).send();
+};

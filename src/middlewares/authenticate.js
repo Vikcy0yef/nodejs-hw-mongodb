@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
 import createHttpError from "http-errors";
+import Session from "../models/Session.js"; // імпортуй свою модель сесії
 
-export const authenticate = (req, res, next) => {
+export const authenticate = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -22,9 +23,18 @@ export const authenticate = (req, res, next) => {
       throw createHttpError(401, "Invalid access token");
     }
 
-    
-    req.user = { _id: payload.userId };
+    // ✅ Додаємо перевірку сесії
+    const session = await Session.findOne({
+      userId: payload.userId,
+      accessToken: token,
+    });
 
+    if (!session) {
+      
+      throw createHttpError(401, "Session not found or already logged out");
+    }
+
+    req.user = { _id: payload.userId };
     next();
   } catch (error) {
     next(error);
