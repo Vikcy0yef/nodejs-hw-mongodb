@@ -33,9 +33,15 @@ export const getContactsController = async (req, res) => {
     );
   
         if (!paginationData.data.length) {
-          throw createHttpError(404, 'Contact not found');
-        }
-      
+      return res.json({
+        status: 200,
+        message: "No contacts found yet!",
+        data: {
+          ...paginationData,
+          data: [], 
+        },
+      });
+    }
         res.json({
           status: 200,
           message: 'Successfully found contacts!',

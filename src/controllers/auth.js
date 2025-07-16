@@ -26,7 +26,6 @@ export const register = ctrlWrapper(async (req, res) => {
 export const login = ctrlWrapper(async (req, res) => {
     const { accessToken, refreshToken, sessionId } = await loginUser(req.body);
   
-    
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true, 
