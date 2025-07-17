@@ -6,7 +6,9 @@ import errorHandler from "./middlewares/errorHandler.js";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
 import authRouter from "./routers/auth.js";
 import cookieParser from "cookie-parser";
-
+import swaggerUi from 'swagger-ui-express';
+import fs from 'fs';
+import path from 'path';
 
 
 function setupServer() { 
@@ -22,7 +24,10 @@ function setupServer() {
     app.use('/contacts', controllersContacts);
     app.use("/auth", authRouter);
   
-    console.log("Auth router connected")
+   const swaggerDocument = JSON.parse(
+  fs.readFileSync(path.join(process.cwd(), 'docs/swagger.json'), 'utf8'));
+    
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
     app.use(notFoundHandler); 
    
