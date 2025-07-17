@@ -1,0 +1,31 @@
+tags:
+  - Contacts
+summary: Отримати список контактів
+operationId: getContacts
+description: Отримує масив усіх контактів, з можливістю фільтрації за параметрами.
+security:
+  - bearerAuth: []
+parameters:
+  - name: favorite
+    in: query
+    required: false
+    schema:
+      type: boolean
+    description: Якщо true — повертати лише обрані контакти
+  - name: page
+    in: query
+    required: false
+    schema:
+      type: integer
+    description: Номер сторінки для пагінації
+  - name: limit
+    in: query
+    required: false
+    schema:
+      type: integer
+    description: Кількість елементів на сторінці
+responses:
+  '200':
+    description: Список контактів успішно отримано
+  '401':
+    description: Неавторизований доступ
