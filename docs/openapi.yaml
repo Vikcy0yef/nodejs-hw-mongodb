@@ -11,7 +11,7 @@ tags:
     description: Операції з контактами
 servers:
   - url: http://localhost:3000
-  - url: https://nodejs-hw-mongodb-24-0261.onrender.com
+  - url: https://nodejs-hw-mongodb-25-xkew.onrender.com
 paths:
   /contacts:
     get:

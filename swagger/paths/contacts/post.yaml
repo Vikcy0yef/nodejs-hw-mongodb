@@ -1,35 +1,105 @@
 tags:
   - Contacts
-summary: Створити новий контакт
+summary: Створити контакт
 operationId: createContact
-description: Додає новий контакт до вашої колекції.
+description: Створює новий контакт з переданими даними
 security:
   - bearerAuth: []
 requestBody:
   required: true
   content:
-    application/json:
+    multipart/form-data:
       schema:
         type: object
-        properties:
-          name:
-            type: string
-          email:
-            type: string
-          phoneNumber:
-            type: string
-          contactType:
-            type: string
-          isFavourite:
-            type: boolean
         required:
           - name
-          - email
           - phoneNumber
+          - contactType
+        properties:
+          name:
+            description: Ім’я контакту
+            type: string
+            example: 'Іван Петренко'
+          phoneNumber:
+            description: Номер телефону контакту
+            type: string
+            example: '+380931231231'
+          email:
+            description: Електронна пошта контакту (необов’язково)
+            type: string
+            example: 'ivan@example.com'
+          isFavourite:
+            description: Чи є контакт у вибраних
+            type: boolean
+            example: false
+          contactType:
+            description: Тип контакту
+            type: string
+            enum: [work, home, personal]
+            example: personal
+          photo:
+            description: Файл фото контакту
+            type: string
+            format: binary
 responses:
   '201':
     description: Контакт успішно створено
-  '400':
-    description: Помилка валідації даних
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 201
+            message:
+              type: string
+              example: Контакт успішно створено
+            data:
+              type: object
+              properties:
+                _id:
+                  type: string
+                  example: 60d0fe4f5311236168a109ca
+                name:
+                  type: string
+                  example: Іван Петренко
+                phoneNumber:
+                  type: string
+                  example: '+380931231231'
+                email:
+                  type: string
+                  example: 'ivan@example.com'
+                isFavourite:
+                  type: boolean
+                  example: false
+                contactType:
+                  type: string
+                  example: personal
+                photo:
+                  type: string
+                  example: https://res.cloudinary.com/demo/image/upload/v1234567890/sample.jpg
   '401':
-    description: Неавторизований доступ
+    description: Неавторизований запит
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 401
+            message:
+              type: string
+              example: Неавторизований запит
+            data:
+              type: object
+              example: {}
