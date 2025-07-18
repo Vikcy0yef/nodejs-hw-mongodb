@@ -80,30 +80,6 @@
           },
           {
             "in": "query",
-            "name": "name",
-            "schema": {
-              "type": "string"
-            },
-            "description": "Фільтр за ім’ям (частковий збіг)"
-          },
-          {
-            "in": "query",
-            "name": "phoneNumber",
-            "schema": {
-              "type": "string"
-            },
-            "description": "Фільтр за номером телефону (частковий збіг)"
-          },
-          {
-            "in": "query",
-            "name": "email",
-            "schema": {
-              "type": "string"
-            },
-            "description": "Фільтр за електронною поштою (частковий збіг)"
-          },
-          {
-            "in": "query",
             "name": "isFavourite",
             "schema": {
               "type": "boolean"
@@ -793,34 +769,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Контакт успішно видалено",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message",
-                    "data"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Контакт успішно видалено"
-                    },
-                    "data": {
-                      "type": "object",
-                      "example": {}
-                    }
-                  }
-                }
-              }
-            }
+          "204": {
+            "description": "Контакт успішно видалено (без тіла відповіді)"
           },
           "401": {
             "description": "Неавторизований запит",
