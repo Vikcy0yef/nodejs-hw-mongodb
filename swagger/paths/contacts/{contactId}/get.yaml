@@ -1,19 +1,106 @@
 tags:
   - Contacts
 summary: Отримати контакт за ID
-operationId: getContactById
-description: Отримує детальну інформацію про контакт за його унікальним ідентифікатором.
+operationId: getContact
+description: Повертає контакт за вказаним ID
 security:
   - bearerAuth: []
 parameters:
-  - name: contactId
-    in: path
+  - in: path
+    name: contactId
     required: true
     schema:
       type: string
-    description: Ідентифікатор контакту, який потрібно отримати
+      example: '65ca67e7ae7f10c88b598384'
+    description: Унікальний ідентифікатор контакту
 responses:
   '200':
     description: Контакт успішно знайдено
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Контакт успішно знайдено!
+            data:
+              type: object
+              required:
+                - _id
+                - name
+                - phoneNumber
+                - email
+                - isFavourite
+                - contactType
+                - photo
+              properties:
+                _id:
+                  type: string
+                  example: 65ca67e7ae7f10c88b598384
+                name:
+                  type: string
+                  example: Іван Петренко
+                phoneNumber:
+                  type: string
+                  example: '+380931231231'
+                email:
+                  type: string
+                  example: ivan@example.com
+                isFavourite:
+                  type: boolean
+                  example: false
+                contactType:
+                  type: string
+                  enum: [work, home, personal]
+                  example: personal
+                photo:
+                  type: string
+                  example: https://res.cloudinary.com/demo/image/upload/v1234567890/sample.jpg
+  '401':
+    description: Неавторизований запит
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 401
+            message:
+              type: string
+              example: Неавторизований запит
+            data:
+              type: object
+              example: {}
   '404':
     description: Контакт не знайдено
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: Контакт не знайдено
+            data:
+              type: object
+              example: {}

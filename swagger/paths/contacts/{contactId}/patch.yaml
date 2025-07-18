@@ -1,40 +1,130 @@
 tags:
   - Contacts
-summary: Оновити контакт
-operationId: updateContact
-description: Оновлює дані існуючого контакту.
+summary: Частково оновити контакт
+operationId: patchContact
+description: Оновлює деякі поля контакту за вказаним ID (потрібна авторизація)
 security:
   - bearerAuth: []
 parameters:
-  - name: contactId
-    in: path
+  - in: path
+    name: contactId
     required: true
     schema:
       type: string
-    description: Ідентифікатор контакту
+      example: '68682b958a05bc3855c08c90'
+    description: Унікальний ідентифікатор контакту
 requestBody:
   required: true
   content:
-    application/json:
+    multipart/form-data:
       schema:
         type: object
         properties:
           name:
             type: string
-          email:
-            type: string
+            description: Ім’я контакту
+            example: 'Іван Петренко'
           phoneNumber:
             type: string
-          contactType:
+            description: Номер телефону
+            example: '+380931231231'
+          email:
             type: string
+            description: Електронна пошта
+            example: 'ivan@example.com'
           isFavourite:
             type: boolean
+            description: Чи контакт у вибраних
+            example: false
+          contactType:
+            type: string
+            enum: [work, home, personal]
+            description: Тип контакту
+            example: personal
+          photo:
+            type: string
+            format: binary
+            description: Фото контакту
 responses:
   '200':
     description: Контакт успішно оновлено
-  '400':
-    description: Помилка валідації даних
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Контакт успішно оновлено!
+            data:
+              type: object
+              properties:
+                _id:
+                  type: string
+                  example: 68682b958a05bc3855c08c90
+                name:
+                  type: string
+                  example: Іван Петренко
+                phoneNumber:
+                  type: string
+                  example: '+380931231231'
+                email:
+                  type: string
+                  example: ivan@example.com
+                isFavourite:
+                  type: boolean
+                  example: false
+                contactType:
+                  type: string
+                  enum: [work, home, personal]
+                  example: personal
+                photo:
+                  type: string
+                  example: https://res.cloudinary.com/demo/image/upload/v1234567890/sample.jpg
+  '401':
+    description: Неавторизований запит
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 401
+            message:
+              type: string
+              example: Неавторизований запит
+            data:
+              type: object
+              example: {}
   '404':
     description: Контакт не знайдено
-  '401':
-    description: Неавторизований доступ
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: Контакт не знайдено
+            data:
+              type: object
+              example: {}
