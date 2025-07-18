@@ -32,21 +32,6 @@ parameters:
       example: asc
     description: Напрямок сортування
   - in: query
-    name: name
-    schema:
-      type: string
-    description: Фільтр за ім’ям (частковий збіг)
-  - in: query
-    name: phoneNumber
-    schema:
-      type: string
-    description: Фільтр за номером телефону (частковий збіг)
-  - in: query
-    name: email
-    schema:
-      type: string
-    description: Фільтр за електронною поштою (частковий збіг)
-  - in: query
     name: isFavourite
     schema:
       type: boolean
